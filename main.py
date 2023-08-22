@@ -14,8 +14,8 @@ async def ping(request):
 
 @routes.get('/cats')
 async def cats(requset):
-    all_cats = await cats_list(requset)
-    return web.json_response(data=all_cats, status=200)
+    all_cats, status = await cats_list(requset)
+    return web.json_response(data=all_cats, status=status)
 
 if __name__ == '__main__':
     app.add_routes(routes)

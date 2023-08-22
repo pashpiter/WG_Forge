@@ -33,13 +33,25 @@ async def cats_list(request):
         conn = await create_connection()
         attr = request.query.get('attribute', 'name')
         order = request.query.get('order', 'ASC')
+        limit = request.query.get('limit', '10')
+        offset = request.query.get('offset', '0')
+        if attr.lower() not in [
+            'name', 'color', 'tail_length', 'whiskers_length'
+        ]:
+            return ('No such attribute'), 400
+        if order.lower() not in ['asc', 'desc']:
+            return ('Check order'), 400
+        if limit <= '0':
+            return ('LIMIT must be more then 0'), 400
+        if offset < '0':
+            return ('OFFSET must be more or even 0'), 400
         r = await conn.fetch(
             f'SELECT name, color, tail_length, whiskers_length FROM cats '
-            f'ORDER BY {attr} {order};'
+            f'ORDER BY {attr} {order} LIMIT {limit} OFFSET {offset}'
         )
     except Exception as e:
         raise e
-    return [dict(c) for c in r]
+    return [dict(c) for c in r], 200
 
 
 # async def cats_stats():
