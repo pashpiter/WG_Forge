@@ -28,18 +28,32 @@ async def cats_color_count():
         raise e
 
 
-async def cats_stats():
+async def cats_list(request):
     try:
         conn = await create_connection()
-        await conn.execute(
-            '''INSERT INTO cats_stat (tail_length_mean, tail_length_median,
-            tail_length_mode, whiskers_length_mean, whiskers_length_median,
-            whiskers_length_mode)
-            SELECT AVG(tail_length), 
-            '''
+        attr = request.query.get('attribute', 'name')
+        order = request.query.get('order', 'ASC')
+        r = await conn.fetch(
+            f'SELECT name, color, tail_length, whiskers_length FROM cats '
+            f'ORDER BY {attr} {order};'
         )
     except Exception as e:
         raise e
+    return [dict(c) for c in r]
+
+
+# async def cats_stats():
+#     try:
+#         conn = await create_connection()
+#         await conn.execute(
+#             '''INSERT INTO cats_stat (tail_length_mean, tail_length_median,
+#             tail_length_mode, whiskers_length_mean, whiskers_length_median,
+#             whiskers_length_mode)
+#             SELECT AVG(tail_length), 
+#             '''
+#         )
+#     except Exception as e:
+#         raise e
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
