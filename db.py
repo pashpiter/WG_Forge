@@ -28,23 +28,9 @@ async def cats_color_count():
         raise e
 
 
-async def cats_list(request):
+async def cats_list(attr, order, limit, offset):
     try:
         conn = await create_connection()
-        attr = request.query.get('attribute', 'name')
-        order = request.query.get('order', 'ASC')
-        limit = request.query.get('limit', '10')
-        offset = request.query.get('offset', '0')
-        if attr.lower() not in [
-            'name', 'color', 'tail_length', 'whiskers_length'
-        ]:
-            return ('No such attribute'), 400
-        if order.lower() not in ['asc', 'desc']:
-            return ('Check order'), 400
-        if limit <= '0':
-            return ('LIMIT must be more then 0'), 400
-        if offset < '0':
-            return ('OFFSET must be more or even 0'), 400
         r = await conn.fetch(
             f'SELECT name, color, tail_length, whiskers_length FROM cats '
             f'ORDER BY {attr} {order} LIMIT {limit} OFFSET {offset}'
@@ -53,6 +39,40 @@ async def cats_list(request):
         raise e
     return [dict(c) for c in r], 200
 
+
+async def new_cat_to_db(cat):
+    try:
+        conn = await create_connection()
+        await conn.execute(
+            'INSERT INTO cats (name, color, tail_length, whiskers_length) '
+            'VALUES ($1, $2, $3, $4);', cat['name'], cat['color'],
+            cat['tail_length'], cat['whiskers_length']
+        )
+    except Exception as e:
+        raise e
+    return 201
+
+
+async def get_cat(name):
+    try:
+        conn = await create_connection()
+        cat = await conn.fetch(
+            'SELECT * FROM cats WHERE name = $1', name
+        )
+    except Exception as e:
+        raise e
+    return dict(cat[0]) if cat else None
+
+
+async def delete_cat(name):
+    try:
+        conn = await create_connection()
+        await conn.execute(
+            'DELETE FROM cats WHERE name = $1', name
+        )
+    except Exception as e:
+        raise e
+    return True
 
 # async def cats_stats():
 #     try:
