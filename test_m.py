@@ -1,7 +1,8 @@
 from aiohttp import web
 import pytest
 
-from main import ping, cats
+from main import ping, cats, post_cat
+from db import get_cat, delete_cat
 
 
 @pytest.fixture
@@ -9,6 +10,7 @@ def cli(event_loop, aiohttp_client):
     app = web.Application()
     app.router.add_get('/ping', ping)
     app.router.add_get('/cats', cats)
+    app.router.add_post('/cat', post_cat)
     return event_loop.run_until_complete(aiohttp_client(app))
 
 
@@ -93,4 +95,47 @@ async def test_cats_invalid_limit(cli):
     assert resp.status == 400
     params = '?limit=0'
     resp = await cli.get(f'/cats{params}')
+    assert resp.status == 400
+
+
+async def test_new_cat(cli):
+    new_cat = ("{\"name\": \"Test_cat\", \"color\": \"black\", "
+               "\"tail_length\": 11, \"whiskers_length\": 11}")
+    await delete_cat(eval(new_cat)['name'])
+    resp = await cli.post('/cat', data=new_cat)
+    print(await resp.text())
+    assert resp.status == 201
+    cat = await get_cat(eval(new_cat)['name'])
+    assert cat['name'] == 'Test_cat'
+    assert cat['color'] == 'black'
+    assert cat['tail_length'] == 11
+    assert cat['whiskers_length'] == 11
+    await delete_cat(eval(new_cat)['name'])
+
+
+async def test_new_cat_invalid_name(cli):
+    new_cat = ("{\"name\": \"Test_cat\", \"color\": \"black\", "
+               "\"tail_length\": 11, \"whiskers_length\": 11}")
+    resp = await cli.post('/cat', data=new_cat)
+    assert resp.status == 201
+    resp = await cli.post('/cat', data=new_cat)
+    assert resp.status == 400
+    await delete_cat(eval(new_cat)['name'])
+    new_cat = ("{\"name\": \"\", \"color\": \"black\", \"tail_length\": 11, "
+               "\"whiskers_length\": 11}")
+    resp = await cli.post('/cat', data=new_cat)
+    assert resp.status == 400
+
+
+async def test_new_cat_invalid_tail_length(cli):
+    new_cat = ("{\"name\": \"Test_cat\", \"color\": \"black\", "
+               "\"tail_length\": -11, \"whiskers_length\": 11}")
+    resp = await cli.post('/cat', data=new_cat)
+    assert resp.status == 400
+
+
+async def test_new_cat_invalid_whiskers_length(cli):
+    new_cat = ("{\"name\": \"Test_cat\", \"color\": \"black\", "
+               "\"tail_length\": 11, \"whiskers_length\": -11}")
+    resp = await cli.post('/cat', data=new_cat)
     assert resp.status == 400
