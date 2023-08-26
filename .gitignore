@@ -154,5 +154,3 @@ dmypy.json
 cython_debug/
 
 # Config
-config.yaml
-allowed_tokens.yaml
