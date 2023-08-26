@@ -1,0 +1,6 @@
+[flake8]
+ignore =
+    I004
+exclude =
+    venv/
+max-complexity = 10
