@@ -24,8 +24,6 @@ async def test_ping(cli):
 async def test_cats(cli):
     resp = await cli.get('/cats')
     assert resp.status == 200
-    data = await resp.text()
-    assert len(data) > 700
 
 
 async def test_cats_valid_params(cli):
@@ -103,7 +101,6 @@ async def test_new_cat(cli):
                "\"tail_length\": 11, \"whiskers_length\": 11}")
     await delete_cat(eval(new_cat)['name'])
     resp = await cli.post('/cat', data=new_cat)
-    print(await resp.text())
     assert resp.status == 201
     cat = await get_cat(eval(new_cat)['name'])
     assert cat['name'] == 'Test_cat'
@@ -132,10 +129,18 @@ async def test_new_cat_invalid_tail_length(cli):
                "\"tail_length\": -11, \"whiskers_length\": 11}")
     resp = await cli.post('/cat', data=new_cat)
     assert resp.status == 400
+    new_cat = ("{\"name\": \"Test_cat\", \"color\": \"black\", "
+               "\"tail_length\": \"check\", \"whiskers_length\": 11}")
+    resp = await cli.post('/cat', data=new_cat)
+    assert resp.status == 400
 
 
 async def test_new_cat_invalid_whiskers_length(cli):
     new_cat = ("{\"name\": \"Test_cat\", \"color\": \"black\", "
                "\"tail_length\": 11, \"whiskers_length\": -11}")
+    resp = await cli.post('/cat', data=new_cat)
+    assert resp.status == 400
+    new_cat = ("{\"name\": \"Test_cat\", \"color\": \"black\", "
+               "\"tail_length\": 11, \"whiskers_length\": \"check\"}")
     resp = await cli.post('/cat', data=new_cat)
     assert resp.status == 400

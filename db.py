@@ -5,6 +5,7 @@ from settings import config
 
 
 async def create_connection():
+    """Подключение к базе данных"""
     database, user, password, host, port = config.values()
     try:
         conn = await asyncpg.connect(
@@ -29,6 +30,7 @@ async def cats_color_count():
 
 
 async def cats_list(attr, order, limit, offset):
+    """Получение списка котов с доп аттрибутами по запросу из базы"""
     try:
         conn = await create_connection()
         r = await conn.fetch(
@@ -41,6 +43,7 @@ async def cats_list(attr, order, limit, offset):
 
 
 async def new_cat_to_db(cat):
+    """Добавление нового кота в базу"""
     try:
         conn = await create_connection()
         await conn.execute(
@@ -54,6 +57,7 @@ async def new_cat_to_db(cat):
 
 
 async def get_cat(name):
+    """Получение одного кота из базы по имени"""
     try:
         conn = await create_connection()
         cat = await conn.fetch(
@@ -65,6 +69,7 @@ async def get_cat(name):
 
 
 async def delete_cat(name):
+    """Удаление кота из базы по имени"""
     try:
         conn = await create_connection()
         await conn.execute(
@@ -74,18 +79,6 @@ async def delete_cat(name):
         raise e
     return True
 
-# async def cats_stats():
-#     try:
-#         conn = await create_connection()
-#         await conn.execute(
-#             '''INSERT INTO cats_stat (tail_length_mean, tail_length_median,
-#             tail_length_mode, whiskers_length_mean, whiskers_length_median,
-#             whiskers_length_mode)
-#             SELECT AVG(tail_length), 
-#             '''
-#         )
-#     except Exception as e:
-#         raise e
 
 if __name__ == '__main__':
     loop = asyncio.get_event_loop()
