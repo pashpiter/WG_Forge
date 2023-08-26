@@ -1,8 +1,8 @@
-from aiohttp import web
 import pytest
+from aiohttp import web
 
-from main import ping, cats, post_cat
-from db import get_cat, delete_cat
+from db import delete_cat, get_cat
+from main import cats, ping, post_cat
 
 
 @pytest.fixture

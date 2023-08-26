@@ -4,7 +4,6 @@ from aiohttp_swagger import setup_swagger
 from db import cats_list, new_cat_to_db
 from validation import validation_cat, validation_request
 
-
 routes = web.RouteTableDef()
 app = web.Application()
 
