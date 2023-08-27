@@ -32,7 +32,8 @@ async def cats_color_count():
 
 
 async def cats_list(
-        attr: str, order: str, limit: int, offset: int) -> (list[dict], int):
+        attr: str, order: str, limit: int, offset: int
+) -> set[list[dict], int]:
     """Получение списка котов с доп аттрибутами по запросу из базы"""
     try:
         conn = await create_connection()
@@ -59,7 +60,7 @@ async def new_cat_to_db(cat: dict) -> int:
     return 201
 
 
-async def get_cat(name: str) -> Union(dict, None):
+async def get_cat(name: str) -> Union[dict, None]:
     """Получение одного кота из базы по имени"""
     try:
         conn = await create_connection()

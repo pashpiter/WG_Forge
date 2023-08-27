@@ -5,7 +5,7 @@ from aiohttp import web
 from db import get_cat
 
 
-async def validation_cat(cat: dict) -> Union((str, int), (bool, bool)):
+async def validation_cat(cat: dict) -> Union[set[str, int], set[bool, bool]]:
     """Валидация кота на входе"""
     name = cat.get('name')
     color = cat.get('color')
@@ -31,8 +31,8 @@ async def validation_cat(cat: dict) -> Union((str, int), (bool, bool)):
     return True, True
 
 
-async def validation_request(request: web.Request) -> Union(
-        (str, int), (set(str, str, int, int), bool)):
+async def validation_request(request: web.Request) -> Union[
+        set[str, int], set[(str, str, int, int), bool]]:
     """Валидация аттрибутов request"""
     attr = request.query.get('attribute', 'name')
     order = request.query.get('order', 'ASC')
