@@ -9,13 +9,13 @@ app = web.Application()
 
 
 @routes.get('/ping')
-async def ping(request):
+async def ping(request: web.Request) -> web.Response:
     """Проврека работы сервера"""
     return web.Response(text='Cats Service. Version 0.1')
 
 
 @routes.get('/cats')
-async def cats(requset):
+async def cats(requset: web.Request) -> web.Response:
     """Функция для возврата списка котов с дополнительными параметрами"""
     params_or_text, status = await validation_request(requset)
     if status == 400:
@@ -25,7 +25,7 @@ async def cats(requset):
 
 
 @routes.post('/cat')
-async def post_cat(request):
+async def post_cat(request: web.Request) -> web.Response:
     """Добавление котов"""
     new_cat = await request.json()
     text, status = await validation_cat(new_cat)

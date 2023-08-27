@@ -1,11 +1,12 @@
 import asyncio
+from typing import Union
 
 import asyncpg
 
 from settings import config
 
 
-async def create_connection():
+async def create_connection() -> asyncpg.Connection:
     """Подключение к базе данных"""
     database, user, password, host, port = config.values()
     try:
@@ -30,7 +31,8 @@ async def cats_color_count():
         raise e
 
 
-async def cats_list(attr, order, limit, offset):
+async def cats_list(
+        attr: str, order: str, limit: int, offset: int) -> (list[dict], int):
     """Получение списка котов с доп аттрибутами по запросу из базы"""
     try:
         conn = await create_connection()
@@ -43,7 +45,7 @@ async def cats_list(attr, order, limit, offset):
     return [dict(c) for c in r], 200
 
 
-async def new_cat_to_db(cat):
+async def new_cat_to_db(cat: dict) -> int:
     """Добавление нового кота в базу"""
     try:
         conn = await create_connection()
@@ -57,7 +59,7 @@ async def new_cat_to_db(cat):
     return 201
 
 
-async def get_cat(name):
+async def get_cat(name: str) -> Union(dict, None):
     """Получение одного кота из базы по имени"""
     try:
         conn = await create_connection()
@@ -69,7 +71,7 @@ async def get_cat(name):
     return dict(cat[0]) if cat else None
 
 
-async def delete_cat(name):
+async def delete_cat(name: str) -> bool:
     """Удаление кота из базы по имени"""
     try:
         conn = await create_connection()

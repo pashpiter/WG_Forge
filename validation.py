@@ -1,7 +1,11 @@
+from typing import Union
+
+from aiohttp import web
+
 from db import get_cat
 
 
-async def validation_cat(cat):
+async def validation_cat(cat: dict) -> Union((str, int), (bool, bool)):
     """Валидация кота на входе"""
     name = cat.get('name')
     color = cat.get('color')
@@ -27,7 +31,8 @@ async def validation_cat(cat):
     return True, True
 
 
-async def validation_request(request):
+async def validation_request(request: web.Request) -> Union(
+        (str, int), (set(str, str, int, int), bool)):
     """Валидация аттрибутов request"""
     attr = request.query.get('attribute', 'name')
     order = request.query.get('order', 'ASC')
