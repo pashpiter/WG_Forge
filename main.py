@@ -13,7 +13,7 @@ app = web.Application()
 @routes.get('/ping')
 async def ping(request: web.Request) -> web.Response:
     """Проврека работы сервера"""
-    asyncio.sleep(1)
+    await asyncio.sleep(1)
     return web.Response(text='Cats Service. Version 0.1')
 
 
