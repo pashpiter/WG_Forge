@@ -1,3 +1,5 @@
+import asyncio
+
 from aiohttp import web
 from aiohttp_swagger import setup_swagger
 
@@ -11,6 +13,7 @@ app = web.Application()
 @routes.get('/ping')
 async def ping(request: web.Request) -> web.Response:
     """Проврека работы сервера"""
+    asyncio.sleep(1)
     return web.Response(text='Cats Service. Version 0.1')
 
 
