@@ -12,7 +12,7 @@ def cli(loop, aiohttp_client) -> TestClient:
     app.router.add_get('/ping', ping)
     app.router.add_get('/cats', cats)
     app.router.add_post('/cat', post_cat)
-    print(type(aiohttp_client(app)))
+    # print(type(aiohttp_client(app)))
     return loop.run_until_complete(aiohttp_client(app))
 
 
