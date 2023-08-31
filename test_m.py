@@ -6,26 +6,36 @@ from db import delete_cat, get_cat
 from main import cats, ping, post_cat
 
 
-@pytest.fixture
-def cli(event_loop, aiohttp_client) -> TestClient:
+# @pytest.fixture
+# def cli(event_loop, aiohttp_client) -> TestClient:
+#     app = web.Application()
+#     app.router.add_get('/ping', ping)
+#     app.router.add_get('/cats', cats)
+#     app.router.add_post('/cat', post_cat)
+#     print(type(aiohttp_client))
+#     return event_loop.run_until_complete(aiohttp_client(app))
+
+
+async def test_ping(event_loop, aiohttp_client: TestClient) -> None:
+    """Проверка доступа к сервису"""
     app = web.Application()
     app.router.add_get('/ping', ping)
     app.router.add_get('/cats', cats)
     app.router.add_post('/cat', post_cat)
-    print(type(aiohttp_client))
-    return event_loop.run_until_complete(aiohttp_client(app))
-
-
-async def test_ping(cli: TestClient) -> None:
-    """Проверка доступа к сервису"""
+    cli = await aiohttp_client(app)
     resp = await cli.get('/ping')
     assert resp.status == 200
     text = await resp.text()
     assert 'Cats Service. Version 0.1' in text
 
 
-async def test_cats(cli: TestClient) -> None:
+async def test_cats(event_loop, aiohttp_client: TestClient) -> None:
     """Общая проверка получения списка котов"""
+    app = web.Application()
+    app.router.add_get('/ping', ping)
+    app.router.add_get('/cats', cats)
+    app.router.add_post('/cat', post_cat)
+    cli = await aiohttp_client(app)
     resp = await cli.get('/cats')
     assert resp.status == 200
 
